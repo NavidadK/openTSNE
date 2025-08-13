@@ -680,9 +680,6 @@ class TSNEEmbedding(np.ndarray):
             error, embedding = embedding.optimizer(
                 embedding=embedding, 
                 P=self.affinities.P,
-                # X=gradient_descent_params.get("X", None),
-                # reg_scaling=self.gradient_descent_params.get("reg_scaling"), 
-                # reg_scaling_dims=self.gradient_descent_params.get("reg_scaling_dims"), 
                 **optim_params
             )
 
@@ -1132,6 +1129,21 @@ class TSNE(BaseEstimator):
         number generator is the RandomState instance used by `np.random`.
 
     verbose: bool
+
+    regularization: bool
+        Whether to apply regularization to the embedding.
+
+    reg_lambda: float
+        The regularization strength.
+
+    reg_embedding: np.ndarray
+        The embedding to use for regularization.
+
+    reg_scaling: str
+        The scaling method to use for regularization. Must be 'norm' or 'optimal'.
+
+    reg_scaling_dims: str
+        The dimension of the alpha scaling parameter. Must be 'one'(scalar) or 'all'(embedding dimension).
 
     """
 
@@ -1634,9 +1646,8 @@ class gradient_descent:
         regularization=False,
         reg_lambda=0.1,
         reg_embedding=None,
-        reg_scaling='optimal',
-        reg_scaling_dims='all',
-        X=None,
+        reg_scaling='norm',
+        reg_scaling_dims='one',
     ):
         """Perform batch gradient descent with momentum and gains.
 
@@ -1734,6 +1745,24 @@ class gradient_descent:
         callbacks_every_iters: int
             How many iterations should pass between each time the callbacks are
             invoked.
+            
+        verbose: bool
+
+        regularization: bool
+            Whether to apply regularization to the embedding.
+
+        reg_lambda: float
+            The regularization strength.
+
+        reg_embedding: np.ndarray
+            The embedding to use for regularization.
+
+        reg_scaling: str
+            The scaling method to use for regularization. Must be 'norm' or 'optimal'.
+
+        reg_scaling_dims: str
+            The dimension of the alpha scaling parameter. Must be 'one'(scalar) or 'all'(embedding dimension).
+
 
         Returns
         -------
