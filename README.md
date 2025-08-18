@@ -48,7 +48,7 @@ plt.figure()
 plt.scatter(*tasic_dreams.T, c=tasic_colors, alpha=0.5, s=1.0, edgecolor="none")
 plt.gca().set_aspect("equal")
 plt.axis("off")
-plt.title("DREAMS")
+plt.title("DREAMS on Tasic et al.")
 plt.show()
 ````
 <p align="center"><img width="500" alt="Tasic DREAMS" src="figures/tasic_dreams.png">
