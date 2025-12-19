@@ -66,8 +66,6 @@ def _handle_nice_params(embedding: np.ndarray, optim_params: dict) -> None:
         )
     # `gradient_descent` uses the more informative name `objective_function`
     optim_params["objective_function"] = negative_gradient_method
-    # optim_params["reg_scaling"] = optim_params.get("reg_scaling", "optimal")
-    # optim_params["reg_scaling_dims"] = optim_params.get("reg_scaling_dims", "all")
 
     # Handle number of jobs
     n_jobs = optim_params.get("n_jobs", 1)
@@ -1140,7 +1138,7 @@ class TSNE(BaseEstimator):
         The embedding to use for regularization.
 
     reg_scaling: str
-        The scaling method to use for regularization. Must be 'norm' or 'optimal'.
+        The scaling method to use for regularization. Must be 'norm' or 'procrustes'.
 
     reg_scaling_dims: str
         The dimension of the alpha scaling parameter. Must be 'one'(scalar) or 'all'(embedding dimension).
@@ -1758,7 +1756,7 @@ class gradient_descent:
             The embedding to use for regularization.
 
         reg_scaling: str
-            The scaling method to use for regularization. Must be 'norm' or 'optimal'.
+            The scaling method to use for regularization. Must be 'norm' or 'procrustes'.
 
         reg_scaling_dims: str
             The dimension of the alpha scaling parameter. Must be 'one'(scalar) or 'all'(embedding dimension).
@@ -1896,8 +1894,8 @@ class gradient_descent:
             # embedding regularizer
             if regularization and reg_embedding is not None:
                 # Regularization error and gradient
-                if reg_scaling == 'optimal':
-                    # optimal scaling
+                if reg_scaling == 'procrustes':
+                    # procrustes scaling
                     if reg_scaling_dims == 'all':
                         alpha = np.sum(embedding * reg_embedding, axis=0) / (np.sum(reg_embedding ** 2, axis=0) + 1e-8)
                     elif reg_scaling_dims == 'one':
@@ -1909,6 +1907,8 @@ class gradient_descent:
                         alpha = np.linalg.norm(embedding) / (np.linalg.norm(reg_embedding) + 1e-8)
                 reg_error = np.mean((embedding - alpha * reg_embedding) ** 2)
                 reg_grad = 2/len(embedding) * (embedding - alpha * reg_embedding)
+                # The gradient when using norm scaling and also propagating the gradient through alpha:
+                #reg_grad = 2/len(embedding) * (embedding - alpha * reg_embedding) * (1 - (embedding * reg_embedding)/(np.linalg.norm(embedding) * np.linalg.norm(reg_embedding)))
 
                 # Combining with the t-SNE error and gradient
                 tsne_grad = self.gains * gradient
