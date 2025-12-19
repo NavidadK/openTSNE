@@ -19,11 +19,10 @@ cd DREAMS
 python setup.py install
 ````
 # Usage example
-DREAMS is using a precomputed reference embedding that is responsible for the global layout of the embedding. Per default DREAMS is using the PCA embedding, but other embeddings such as the MDS embedding can be used as well. The regularization strength determines the influence of the regularization-embedding on the final embedding. Its default regualrization strength is $\lambda=0.1$, which experimentally showed to effectively keep the local strcuture preservation of $t$-SNE and simultaneously the global structure preservation of PCA.
+DREAMS is using a precomputed reference embedding that is responsible for the global layout of the embedding. Per default DREAMS is using the PCA embedding, but other embeddings such as the MDS embedding can be used as well. The regularization strength determines the influence of the regularization-embedding on the final embedding. Its default regualrization strength is $\lambda=0.15$, which experimentally showed to effectively keep the local strcuture preservation of $t$-SNE and simultaneously the global structure preservation of PCA.
 
 Here is an example on the Tasic et al. dataset[^tasic] (which is not part of this repository but the preprocessed data can be found [here](https://github.com/berenslab/rna-seq-tsne/tree/master/data/tasic-preprocessed)):
 ````python
-import openTSNE
 from openTSNE import TSNE
 import numpy as np              # to load data
 import matplotlib.pyplot as plt # for plotting
@@ -32,12 +31,12 @@ import matplotlib.pyplot as plt # for plotting
 tasic_data = np.load('data/tasic/tasic-pca50.npy')
 # Scaled first 2 PCs
 tasic_pca2 = tasic_data[:, :2]
-tasic_reg_emb = tasic_pca2 / tasic_pca2[:,0].std()
+tasic_reg_emb = tasic_pca2 / tasic_pca2[:,0].std() * 0.0001
 
 # DREAMS
 embedder = TSNE(initialization=tasic_reg_emb, 
                 regularization=True, 
-                reg_lambda=0.1, 
+                reg_lambda=0.15, 
                 reg_embedding=tasic_reg_emb)
 tasic_dreams = embedder.fit(data)
 
